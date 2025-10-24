@@ -67,15 +67,13 @@ useEffect(() => {
 }, []);
 
 
-  //useEffect to fetch user data when token is available
+  
 
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `${token}`;
+  
       fetchUser();
       
-    }
-  }, [token]);
+    }, []);
 
   const value = {
     navigate,
