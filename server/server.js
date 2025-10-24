@@ -19,6 +19,7 @@ app.use(express.json());
 app.get('/', (req, res) => res.json("server is running"));
 
 
+app.use('/api', carRouter);
 app.use('/api/user',userRouter);
 app.use('/api/owner', ownerRouter);
 app.use('/api/bookings', bookingRouter);
