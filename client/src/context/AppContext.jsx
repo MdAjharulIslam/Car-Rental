@@ -36,15 +36,14 @@ export const AppProvider = ({ children }) => {
 
   //fuctioin to fetch all car to server
 
- const fetchCars = async () => {
-  try {
-    const { data } = await axios.get("/api/cars"); // public route
-    if (data.success) setCars(data.cars);
-  } catch (err) {
-    toast.error(err.message);
-  }
-};
-
+  const fetchCars = async () => {
+    try {
+      const { data } = await axios.get("/api/user/cars");
+      data.success ? setCars(data.cars) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   //function to logout user
 
@@ -63,9 +62,8 @@ useEffect(() => {
   if (token) {
     axios.defaults.headers.common["Authorization"] = token;
     setToken(token);
-   } 
     fetchCars();
-  
+  }
 }, []);
 
 
