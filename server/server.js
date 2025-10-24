@@ -5,7 +5,6 @@ import connectDB from './configs/db.js';
 import userRouter from './routes/userRoutes.js';
 import ownerRouter from './routes/ownerRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
-import carRouter from './routes/carRoutes.js'; 
 
 const app = express();
 //connnect database
@@ -18,7 +17,6 @@ app.use(express.json());
 
 
 app.get('/', (req, res) => res.json("server is running"));
-
 
 
 app.use('/api/user',userRouter);
