@@ -62,8 +62,9 @@ useEffect(() => {
   if (token) {
     axios.defaults.headers.common["Authorization"] = token;
     setToken(token);
+   } 
     fetchCars();
-  }
+  
 }, []);
 
 
