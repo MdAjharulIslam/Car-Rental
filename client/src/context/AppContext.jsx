@@ -62,7 +62,7 @@ useEffect(() => {
   if (token) {
     axios.defaults.headers.common["Authorization"] = token;
     setToken(token);
-    fetchCars();
+    
   }
 }, []);
 
@@ -79,8 +79,11 @@ useEffect(() => {
 
 
   useEffect(() => {
-  fetchCars(); // fetch all cars as soon as AppProvider mounts
-}, []);
+  if (token) {
+    // fetch user info
+    fetchCars(); // fetch cars now that token is set
+  }
+}, [token]);
   const value = {
     navigate,
     currency,
