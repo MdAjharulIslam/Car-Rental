@@ -18,84 +18,64 @@ export const AppProvider = ({ children }) => {
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [cars, setCars] = useState([]);
-  const [loadingCars, setLoadingCars] = useState(true);
 
-  // ✅ Fetch all cars instantly (public endpoint)
-  const fetchCars = async () => {
-    try {
-      setLoadingCars(true);
-      const { data } = await axios.get("/api/user/cars", { timeout: 10000 });
-      if (data.success) {
-        setCars(data.cars);
-      } else {
-        toast.error(data.message || "Failed to fetch cars");
-      }
-    } catch (error) {
-      console.error("Car fetch error:", error);
-      toast.error("Unable to load cars. Please try again.");
-    } finally {
-      setLoadingCars(false);
-    }
-  };
-
-  // ✅ Fetch logged-in user (only if token is available)
+  //function to check if user is loged in
   const fetchUser = async () => {
-    if (!token) return;
     try {
       const { data } = await axios.get("/api/user/data");
       if (data.success) {
         setUser(data.user);
         setIsOwner(data.user.role === "owner");
       } else {
-        logout();
+        navigate("/");
       }
     } catch (error) {
-      console.error("User fetch error:", error);
-      logout();
+      toast.error(error.message);
     }
   };
 
-  // ✅ Logout function
+  //fuctioin to fetch all car to server
+
+  const fetchCars = async () => {
+    try {
+      const { data } = await axios.get("/api/user/cars");
+      data.success ? setCars(data.cars) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  //function to logout user
+
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
     setIsOwner(false);
-    delete axios.defaults.headers.common["Authorization"];
-    toast.success("You have been logged out");
-    navigate("/");
+    axios.defaults.headers.common["Authorization"] = "";
+    toast.success("You have been logout");
   };
 
-  // ✅ Retrieve token once on mount
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      axios.defaults.headers.common["Authorization"] = storedToken;
-    }
-    fetchCars(); // fetch cars immediately for everyone
-  }, []);
+ // useEffect to retrieve the token from localStorage
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = token;
+    setToken(token);
+    fetchCars();
+  }
+}, []);
 
-  // ✅ Fetch user when token changes
+
+  //useEffect to fetch user data when token is available
+
   useEffect(() => {
-    if (token) fetchUser();
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `${token}`;
+      fetchUser();
+      
+    }
   }, [token]);
-
-  // ✅ Cache cars in localStorage to avoid refetch delay
-  useEffect(() => {
-    if (cars.length > 0) {
-      localStorage.setItem("cachedCars", JSON.stringify(cars));
-    }
-  }, [cars]);
-
-  // ✅ Load cached cars instantly on startup
-  useEffect(() => {
-    const cached = localStorage.getItem("cachedCars");
-    if (cached) {
-      setCars(JSON.parse(cached));
-      setLoadingCars(false);
-    }
-  }, []);
 
   const value = {
     navigate,
@@ -118,10 +98,13 @@ export const AppProvider = ({ children }) => {
     setPickupDate,
     returnDate,
     setReturnDate,
-    loadingCars,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-export const useAppContext = () => useContext(AppContext);
+export const useAppContext = () => {
+  return useContext(AppContext);
+};
+
+
